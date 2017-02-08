@@ -70,7 +70,7 @@ function itemHasRefinement(attributeName, results, value) {
  * @providedPropType {function} refine - a function to select a range.
  * @providedPropType {function} createURL - a function to generate a URL for the corresponding search state
  * @providedPropType {string} currentRefinement - the refinement currently applied.  follow the shape of a `string` with a pattern of `'{start}:{end}'` which corresponds to the current selected item. For instance, when the selected item is `{start: 10, end: 20}`, the searchState of the widget is `'10:20'`. When `start` isn't defined, the searchState of the widget is `':{end}'`, and the same way around when `end` isn't defined. However, when neither `start` nor `end` are defined, the searchState is an empty string.
- * @providedPropType {array.<{isRefined: boolean, label: string, value: string, isRefined: boolean, noRefinement: boolean}>} items - the list of ranges the MultiRange can display.
+ * @providedPropType {array.<{isRefined: boolean, label: string, value: string, isRefined: boolean, noRefinement: boolean, isLargest: boolean}>} items - the list of ranges the MultiRange can display.
  */
 export default createConnector({
   displayName: 'AlgoliaMultiRange',
@@ -87,6 +87,7 @@ export default createConnector({
   },
 
   getProvidedProps(props, searchState, searchResults) {
+    const attributeName = props.attributeName;
     const currentRefinement = getCurrentRefinement(props, searchState);
     const items = props.items.map(item => {
       const value = stringifyItem(item);
@@ -96,7 +97,19 @@ export default createConnector({
         isRefined: value === currentRefinement,
         noRefinement: searchResults && searchResults.results ?
          itemHasRefinement(getId(props), searchResults.results, value) : false,
+        isLargest: false,
       };
+    });
+
+    const stats = searchResults.results && searchResults.results.getFacetByName(attributeName) ?
+      searchResults.results.getFacetStats(attributeName) : null;
+    const refinedItem = find(items, item => item.isRefined === true);
+    items.push({
+      isLargest: true,
+      value: '',
+      isRefined: isEmpty(refinedItem),
+      noRefinement: !stats,
+      label: 'All',
     });
 
     return {

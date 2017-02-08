@@ -19,6 +19,7 @@ import MultiRangeComponent from '../components/MultiRange.js';
  * @themeKey ais-MultiRange__itemRadioSelected - The selected radio item
  * @themeKey ais-MultiRange__noRefinement - present when there is no refinement for all ranges
  * @themeKey ais-MultiRange__itemNoRefinement - present when there is no refinement for one range
+ * @translationkey all - The label of the largest range added automatically by react instantsearch
  * @example
  * import React from 'react';
  *
